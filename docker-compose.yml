@@ -1,0 +1,33 @@
+version: '3.9' # optional since v1.27.0
+services:
+  db:
+    image: mariadb:10.5.12
+    restart: always
+    ports:
+      - 32888:3308
+    env_file:
+      - .env.production
+    volumes:
+      - database:/var/lib/mysql
+  adminer:
+    image: adminer:4.8.1
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - 32886:8080
+  api:
+    restart: always
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 32887:5555
+    env_file:
+      - .env.production
+    environment:
+      NODE_ENV: Production
+volumes:
+  database:
